@@ -536,7 +536,7 @@ func (f *maskJobLoggerFactory) WithJobLogger() *log.Logger {
 }
 
 func TestMaskValues(t *testing.T) {
-	assertNoSecret := func(text string, secret string) {
+	assertNoSecret := func(text string) {
 		index := strings.Index(text, "composite secret")
 		if index > -1 {
 			fmt.Printf("\nFound Secret in the given text:\n%s\n", text)
@@ -562,8 +562,8 @@ func TestMaskValues(t *testing.T) {
 	tjfi.runTest(WithJobLoggerFactory(common.WithLogger(context.Background(), logger.WithJobLogger()), logger), t, &Config{})
 	output := logger.Output.String()
 
-	assertNoSecret(output, "secret value")
-	assertNoSecret(output, "YWJjCg==")
+	assertNoSecret(output)
+	assertNoSecret(output)
 }
 
 func TestRunEventSecrets(t *testing.T) {

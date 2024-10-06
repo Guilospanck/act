@@ -36,24 +36,28 @@ type HostEnvironment struct {
 }
 
 func (e *HostEnvironment) Create(_ []string, _ []string) common.Executor {
-	return func(ctx context.Context) error {
+	return func(_ context.Context) error {
 		return nil
 	}
 }
 
 func (e *HostEnvironment) Close() common.Executor {
-	return func(ctx context.Context) error {
+	return func(_ context.Context) error {
 		return nil
 	}
 }
 
 func (e *HostEnvironment) Copy(destPath string, files ...*FileEntry) common.Executor {
-	return func(ctx context.Context) error {
+	return func(_ context.Context) error {
 		for _, f := range files {
 			if err := os.MkdirAll(filepath.Dir(filepath.Join(destPath, f.Name)), 0o777); err != nil {
 				return err
 			}
-			if err := os.WriteFile(filepath.Join(destPath, f.Name), []byte(f.Body), fs.FileMode(f.Mode)); err != nil {
+			fileMode, err := safeConversionFromInt64IntoUint32(f.Mode)
+			if err != nil {
+				return err
+			}
+			if err := os.WriteFile(filepath.Join(destPath, f.Name), []byte(f.Body), fs.FileMode(fileMode)); err != nil {
 				return err
 			}
 		}
@@ -169,13 +173,13 @@ func (e *HostEnvironment) GetContainerArchive(ctx context.Context, srcPath strin
 }
 
 func (e *HostEnvironment) Pull(_ bool) common.Executor {
-	return func(ctx context.Context) error {
+	return func(_ context.Context) error {
 		return nil
 	}
 }
 
 func (e *HostEnvironment) Start(_ bool) common.Executor {
-	return func(ctx context.Context) error {
+	return func(_ context.Context) error {
 		return nil
 	}
 }
@@ -269,7 +273,7 @@ func copyPtyOutput(writer io.Writer, ppty io.Reader, finishLog context.CancelFun
 }
 
 func (e *HostEnvironment) UpdateFromImageEnv(_ *map[string]string) common.Executor {
-	return func(ctx context.Context) error {
+	return func(_ context.Context) error {
 		return nil
 	}
 }
@@ -376,7 +380,7 @@ func (e *HostEnvironment) UpdateFromEnv(srcPath string, env *map[string]string) 
 }
 
 func (e *HostEnvironment) Remove() common.Executor {
-	return func(ctx context.Context) error {
+	return func(_ context.Context) error {
 		if e.CleanUp != nil {
 			e.CleanUp()
 		}
@@ -435,9 +439,9 @@ func goArchToActionArch(arch string) string {
 
 func goOsToActionOs(os string) string {
 	osMapper := map[string]string{
-		"linux": "Linux",
+		"linux":   "Linux",
 		"windows": "Windows",
-		"darwin": "macOS",
+		"darwin":  "macOS",
 	}
 	if os, ok := osMapper[os]; ok {
 		return os
@@ -454,7 +458,7 @@ func (e *HostEnvironment) GetRunnerContext(_ context.Context) map[string]interfa
 	}
 }
 
-func (e *HostEnvironment) GetHealth(ctx context.Context) ContainerHealth {
+func (e *HostEnvironment) GetHealth(_ context.Context) ContainerHealth {
 	return ContainerHealthHealthy
 }
 
