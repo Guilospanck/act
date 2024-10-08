@@ -52,7 +52,7 @@ func TestActionCache(t *testing.T) {
 		},
 	}
 	for _, c := range refs {
-		t.Run(c.Name, func(t *testing.T) {
+		t.Run(c.Name, func(_ *testing.T) {
 			sha, err := cache.Fetch(ctx, c.CacheDir, c.Repo, c.Ref, "")
 			if !a.NoError(err) || !a.NotEmpty(sha) {
 				return

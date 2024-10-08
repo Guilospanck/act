@@ -2,8 +2,9 @@
 run:
   timeout: 3m
 
-skip-dirs:
-  - report # megalinter results+fixes
+issues:
+  exclude-dirs:
+    - report # megalinter results+fixes
 
 linters-settings:
   gocyclo:
@@ -13,7 +14,7 @@ linters-settings:
     disabled-checks:
       - ifElseChain
   importas:
-    aliases:
+    alias:
       - pkg: 'github.com/sirupsen/logrus'
         alias: log
       - pkg: 'github.com/stretchr/testify/assert'

@@ -329,6 +329,11 @@ func (h *Handler) get(w http.ResponseWriter, r *http.Request, params httprouter.
 		return
 	}
 	h.useCache(id)
+	// There's a possible overflow when converting from int to uint
+	if id < 0 {
+		h.responseJSON(w, r, 400, fmt.Errorf("invalid id supplied. it should not be negative"))
+		return
+	}
 	h.storage.Serve(w, r, uint64(id))
 }
 
@@ -415,6 +420,7 @@ const (
 	keepOld    = 5 * time.Minute
 )
 
+//nolint:gocyclo
 func (h *Handler) gcCache() {
 	if h.gcing.Load() {
 		return

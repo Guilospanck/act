@@ -57,7 +57,7 @@ lint-rest:
 		-v $(PWD):/tmp/lint \
 		-e GITHUB_STATUS_REPORTER=false \
 		-e GITHUB_COMMENT_REPORTER=false \
-		megalinter/megalinter-go:v5
+		oxsecurity/megalinter-go:v8.0.0
 
 .PHONY: lint
 lint: lint-go lint-rest
@@ -78,6 +78,10 @@ install: build
 	@cp dist/local/act $(PREFIX)/bin/act
 	@chmod 755 $(PREFIX)/bin/act
 	@act --version
+
+.PHONY: uninstall
+uninstall:
+	@rm -rf $(PREFIX)/bin/act
 
 .PHONY: installer
 installer:

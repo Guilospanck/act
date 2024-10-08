@@ -234,6 +234,7 @@ func AddFunction(funcs *[]FunctionInfo, s string, i1, i2 int) {
 	})
 }
 
+//nolint:gocyclo
 func (s *Node) UnmarshalYAML(node *yaml.Node) error {
 	if node != nil && node.Kind == yaml.DocumentNode {
 		return s.UnmarshalYAML(node.Content[0])

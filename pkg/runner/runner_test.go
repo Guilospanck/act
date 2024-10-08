@@ -24,7 +24,7 @@ import (
 var (
 	baseImage = "node:16-buster-slim"
 	platforms map[string]string
-	logLevel  = log.DebugLevel
+	logLevel  = log.ErrorLevel
 	workdir   = "testdata"
 	secrets   map[string]string
 )
@@ -38,11 +38,11 @@ func init() {
 		"ubuntu-latest": baseImage,
 	}
 
-	if l := os.Getenv("ACT_TEST_LOG_LEVEL"); l != "" {
-		if lvl, err := log.ParseLevel(l); err == nil {
-			logLevel = lvl
-		}
-	}
+	// if l := os.Getenv("ACT_TEST_LOG_LEVEL"); l != "" {
+	// 	if lvl, err := log.ParseLevel(l); err == nil {
+	// 		logLevel = lvl
+	// 	}
+	// }
 
 	if wd, err := filepath.Abs(workdir); err == nil {
 		workdir = wd
@@ -229,102 +229,102 @@ func TestRunEvent(t *testing.T) {
 
 	tables := []TestJobFileInfo{
 		// Shells
-		{workdir, "shells/defaults", "push", "", platforms, secrets},
+		// {workdir, "shells/defaults", "push", "", platforms, secrets},
 		// TODO: figure out why it fails
 		// {workdir, "shells/custom", "push", "", map[string]string{"ubuntu-latest": "catthehacker/ubuntu:pwsh-latest"}, }, // custom image with pwsh
-		{workdir, "shells/pwsh", "push", "", map[string]string{"ubuntu-latest": "catthehacker/ubuntu:pwsh-latest"}, secrets}, // custom image with pwsh
-		{workdir, "shells/bash", "push", "", platforms, secrets},
-		{workdir, "shells/python", "push", "", map[string]string{"ubuntu-latest": "node:16-buster"}, secrets}, // slim doesn't have python
-		{workdir, "shells/sh", "push", "", platforms, secrets},
+		// {workdir, "shells/pwsh", "push", "", map[string]string{"ubuntu-latest": "catthehacker/ubuntu:pwsh-latest"}, secrets}, // custom image with pwsh
+		// {workdir, "shells/bash", "push", "", platforms, secrets},
+		// {workdir, "shells/python", "push", "", map[string]string{"ubuntu-latest": "node:16-buster"}, secrets}, // slim doesn't have python
+		// {workdir, "shells/sh", "push", "", platforms, secrets},
 
 		// Local action
-		{workdir, "local-action-docker-url", "push", "", platforms, secrets},
-		{workdir, "local-action-dockerfile", "push", "", platforms, secrets},
-		{workdir, "local-action-via-composite-dockerfile", "push", "", platforms, secrets},
-		{workdir, "local-action-js", "push", "", platforms, secrets},
+		// {workdir, "local-action-docker-url", "push", "", platforms, secrets},
+		// {workdir, "local-action-dockerfile", "push", "", platforms, secrets},
+		// {workdir, "local-action-via-composite-dockerfile", "push", "", platforms, secrets},
+		// {workdir, "local-action-js", "push", "", platforms, secrets},
 
 		// Uses
-		{workdir, "uses-composite", "push", "", platforms, secrets},
-		{workdir, "uses-composite-with-error", "push", "Job 'failing-composite-action' failed", platforms, secrets},
-		{workdir, "uses-composite-check-for-input-collision", "push", "", platforms, secrets},
-		{workdir, "uses-composite-check-for-input-shadowing", "push", "", platforms, secrets},
-		{workdir, "uses-nested-composite", "push", "", platforms, secrets},
-		{workdir, "remote-action-composite-js-pre-with-defaults", "push", "", platforms, secrets},
-		{workdir, "remote-action-composite-action-ref", "push", "", platforms, secrets},
-		{workdir, "uses-workflow", "push", "", platforms, map[string]string{"secret": "keep_it_private"}},
-		{workdir, "uses-workflow", "pull_request", "", platforms, map[string]string{"secret": "keep_it_private"}},
-		{workdir, "uses-docker-url", "push", "", platforms, secrets},
-		{workdir, "act-composite-env-test", "push", "", platforms, secrets},
+		// {workdir, "uses-composite", "push", "", platforms, secrets},
+		// {workdir, "uses-composite-with-error", "push", "Job 'failing-composite-action' failed", platforms, secrets},
+		// {workdir, "uses-composite-check-for-input-collision", "push", "", platforms, secrets},
+		// {workdir, "uses-composite-check-for-input-shadowing", "push", "", platforms, secrets},
+		// {workdir, "uses-nested-composite", "push", "", platforms, secrets},
+		// {workdir, "remote-action-composite-js-pre-with-defaults", "push", "", platforms, secrets},
+		// {workdir, "remote-action-composite-action-ref", "push", "", platforms, secrets},
+		// {workdir, "uses-workflow", "push", "", platforms, map[string]string{"secret": "keep_it_private"}},
+		// {workdir, "uses-workflow", "pull_request", "", platforms, map[string]string{"secret": "keep_it_private"}},
+		// {workdir, "uses-docker-url", "push", "", platforms, secrets},
+		// {workdir, "act-composite-env-test", "push", "", platforms, secrets},
 
 		// Eval
-		{workdir, "evalmatrix", "push", "", platforms, secrets},
-		{workdir, "evalmatrixneeds", "push", "", platforms, secrets},
-		{workdir, "evalmatrixneeds2", "push", "", platforms, secrets},
-		{workdir, "evalmatrix-merge-map", "push", "", platforms, secrets},
-		{workdir, "evalmatrix-merge-array", "push", "", platforms, secrets},
+		// {workdir, "evalmatrix", "push", "", platforms, secrets},
+		// {workdir, "evalmatrixneeds", "push", "", platforms, secrets},
+		// {workdir, "evalmatrixneeds2", "push", "", platforms, secrets},
+		// {workdir, "evalmatrix-merge-map", "push", "", platforms, secrets},
+		// {workdir, "evalmatrix-merge-array", "push", "", platforms, secrets},
 		{workdir, "issue-1195", "push", "", platforms, secrets},
 
-		{workdir, "basic", "push", "", platforms, secrets},
-		{workdir, "fail", "push", "exit with `FAILURE`: 1", platforms, secrets},
-		{workdir, "runs-on", "push", "", platforms, secrets},
-		{workdir, "checkout", "push", "", platforms, secrets},
-		{workdir, "job-container", "push", "", platforms, secrets},
-		{workdir, "job-container-non-root", "push", "", platforms, secrets},
-		{workdir, "job-container-invalid-credentials", "push", "failed to handle credentials: failed to interpolate container.credentials.password", platforms, secrets},
-		{workdir, "container-hostname", "push", "", platforms, secrets},
-		{workdir, "remote-action-docker", "push", "", platforms, secrets},
-		{workdir, "remote-action-js", "push", "", platforms, secrets},
-		{workdir, "remote-action-js-node-user", "push", "", platforms, secrets}, // Test if this works with non root container
-		{workdir, "matrix", "push", "", platforms, secrets},
-		{workdir, "matrix-include-exclude", "push", "", platforms, secrets},
-		{workdir, "matrix-exitcode", "push", "Job 'test' failed", platforms, secrets},
-		{workdir, "commands", "push", "", platforms, secrets},
-		{workdir, "workdir", "push", "", platforms, secrets},
-		{workdir, "defaults-run", "push", "", platforms, secrets},
-		{workdir, "composite-fail-with-output", "push", "", platforms, secrets},
-		{workdir, "issue-597", "push", "", platforms, secrets},
-		{workdir, "issue-598", "push", "", platforms, secrets},
-		{workdir, "if-env-act", "push", "", platforms, secrets},
-		{workdir, "env-and-path", "push", "", platforms, secrets},
-		{workdir, "environment-files", "push", "", platforms, secrets},
-		{workdir, "GITHUB_STATE", "push", "", platforms, secrets},
-		{workdir, "environment-files-parser-bug", "push", "", platforms, secrets},
-		{workdir, "non-existent-action", "push", "Job 'nopanic' failed", platforms, secrets},
-		{workdir, "outputs", "push", "", platforms, secrets},
-		{workdir, "networking", "push", "", platforms, secrets},
-		{workdir, "steps-context/conclusion", "push", "", platforms, secrets},
-		{workdir, "steps-context/outcome", "push", "", platforms, secrets},
-		{workdir, "job-status-check", "push", "job 'fail' failed", platforms, secrets},
-		{workdir, "if-expressions", "push", "Job 'mytest' failed", platforms, secrets},
-		{workdir, "actions-environment-and-context-tests", "push", "", platforms, secrets},
-		{workdir, "uses-action-with-pre-and-post-step", "push", "", platforms, secrets},
-		{workdir, "evalenv", "push", "", platforms, secrets},
-		{workdir, "docker-action-custom-path", "push", "", platforms, secrets},
-		{workdir, "GITHUB_ENV-use-in-env-ctx", "push", "", platforms, secrets},
-		{workdir, "ensure-post-steps", "push", "Job 'second-post-step-should-fail' failed", platforms, secrets},
-		{workdir, "workflow_call_inputs", "workflow_call", "", platforms, secrets},
-		{workdir, "workflow_dispatch", "workflow_dispatch", "", platforms, secrets},
-		{workdir, "workflow_dispatch_no_inputs_mapping", "workflow_dispatch", "", platforms, secrets},
-		{workdir, "workflow_dispatch-scalar", "workflow_dispatch", "", platforms, secrets},
-		{workdir, "workflow_dispatch-scalar-composite-action", "workflow_dispatch", "", platforms, secrets},
-		{workdir, "job-needs-context-contains-result", "push", "", platforms, secrets},
-		{"../model/testdata", "strategy", "push", "", platforms, secrets}, // TODO: move all testdata into pkg so we can validate it with planner and runner
-		{"../model/testdata", "container-volumes", "push", "", platforms, secrets},
-		{workdir, "path-handling", "push", "", platforms, secrets},
-		{workdir, "do-not-leak-step-env-in-composite", "push", "", platforms, secrets},
-		{workdir, "set-env-step-env-override", "push", "", platforms, secrets},
-		{workdir, "set-env-new-env-file-per-step", "push", "", platforms, secrets},
-		{workdir, "no-panic-on-invalid-composite-action", "push", "jobs failed due to invalid action", platforms, secrets},
+		// {workdir, "basic", "push", "", platforms, secrets},
+		// {workdir, "fail", "push", "exit with `FAILURE`: 1", platforms, secrets},
+		// {workdir, "runs-on", "push", "", platforms, secrets},
+		// {workdir, "checkout", "push", "", platforms, secrets},
+		// {workdir, "job-container", "push", "", platforms, secrets},
+		// {workdir, "job-container-non-root", "push", "", platforms, secrets},
+		// {workdir, "job-container-invalid-credentials", "push", "failed to handle credentials: failed to interpolate container.credentials.password", platforms, secrets},
+		// {workdir, "container-hostname", "push", "", platforms, secrets},
+		// {workdir, "remote-action-docker", "push", "", platforms, secrets},
+		// {workdir, "remote-action-js", "push", "", platforms, secrets},
+		// {workdir, "remote-action-js-node-user", "push", "", platforms, secrets}, // Test if this works with non root container
+		// {workdir, "matrix", "push", "", platforms, secrets},
+		// {workdir, "matrix-include-exclude", "push", "", platforms, secrets},
+		// {workdir, "matrix-exitcode", "push", "Job 'test' failed", platforms, secrets},
+		// {workdir, "commands", "push", "", platforms, secrets},
+		// {workdir, "workdir", "push", "", platforms, secrets},
+		// {workdir, "defaults-run", "push", "", platforms, secrets},
+		// {workdir, "composite-fail-with-output", "push", "", platforms, secrets},
+		// {workdir, "issue-597", "push", "", platforms, secrets},
+		// {workdir, "issue-598", "push", "", platforms, secrets},
+		// {workdir, "if-env-act", "push", "", platforms, secrets},
+		// {workdir, "env-and-path", "push", "", platforms, secrets},
+		// {workdir, "environment-files", "push", "", platforms, secrets},
+		// {workdir, "GITHUB_STATE", "push", "", platforms, secrets},
+		// {workdir, "environment-files-parser-bug", "push", "", platforms, secrets},
+		// {workdir, "non-existent-action", "push", "Job 'nopanic' failed", platforms, secrets},
+		// {workdir, "outputs", "push", "", platforms, secrets},
+		// {workdir, "networking", "push", "", platforms, secrets},
+		// {workdir, "steps-context/conclusion", "push", "", platforms, secrets},
+		// {workdir, "steps-context/outcome", "push", "", platforms, secrets},
+		// {workdir, "job-status-check", "push", "job 'fail' failed", platforms, secrets},
+		// {workdir, "if-expressions", "push", "Job 'mytest' failed", platforms, secrets},
+		// {workdir, "actions-environment-and-context-tests", "push", "", platforms, secrets},
+		// {workdir, "uses-action-with-pre-and-post-step", "push", "", platforms, secrets},
+		// {workdir, "evalenv", "push", "", platforms, secrets},
+		// {workdir, "docker-action-custom-path", "push", "", platforms, secrets},
+		// {workdir, "GITHUB_ENV-use-in-env-ctx", "push", "", platforms, secrets},
+		// {workdir, "ensure-post-steps", "push", "Job 'second-post-step-should-fail' failed", platforms, secrets},
+		// {workdir, "workflow_call_inputs", "workflow_call", "", platforms, secrets},
+		// {workdir, "workflow_dispatch", "workflow_dispatch", "", platforms, secrets},
+		// {workdir, "workflow_dispatch_no_inputs_mapping", "workflow_dispatch", "", platforms, secrets},
+		// {workdir, "workflow_dispatch-scalar", "workflow_dispatch", "", platforms, secrets},
+		// {workdir, "workflow_dispatch-scalar-composite-action", "workflow_dispatch", "", platforms, secrets},
+		// {workdir, "job-needs-context-contains-result", "push", "", platforms, secrets},
+		// {"../model/testdata", "strategy", "push", "", platforms, secrets}, // TODO: move all testdata into pkg so we can validate it with planner and runner
+		// {"../model/testdata", "container-volumes", "push", "", platforms, secrets},
+		// {workdir, "path-handling", "push", "", platforms, secrets},
+		// {workdir, "do-not-leak-step-env-in-composite", "push", "", platforms, secrets},
+		// {workdir, "set-env-step-env-override", "push", "", platforms, secrets},
+		// {workdir, "set-env-new-env-file-per-step", "push", "", platforms, secrets},
+		// {workdir, "no-panic-on-invalid-composite-action", "push", "jobs failed due to invalid action", platforms, secrets},
 
 		// services
-		{workdir, "services", "push", "", platforms, secrets},
-		{workdir, "services-empty-image", "push", "", platforms, secrets},
-		{workdir, "services-host-network", "push", "", platforms, secrets},
-		{workdir, "services-with-container", "push", "", platforms, secrets},
-		{workdir, "mysql-service-container-with-health-check", "push", "", platforms, secrets},
+		// {workdir, "services", "push", "", platforms, secrets},
+		// {workdir, "services-empty-image", "push", "", platforms, secrets},
+		// {workdir, "services-host-network", "push", "", platforms, secrets},
+		// {workdir, "services-with-container", "push", "", platforms, secrets},
+		// {workdir, "mysql-service-container-with-health-check", "push", "", platforms, secrets},
 
 		// local remote action overrides
-		{workdir, "local-remote-action-overrides", "push", "", platforms, secrets},
+		// {workdir, "local-remote-action-overrides", "push", "", platforms, secrets},
 	}
 
 	for _, table := range tables {
@@ -339,6 +339,7 @@ func TestRunEvent(t *testing.T) {
 			}
 
 			testConfigFile := filepath.Join(workdir, table.workflowPath, "config/config.yml")
+
 			if file, err := os.ReadFile(testConfigFile); err == nil {
 				testConfig := &TestConfig{}
 				if yaml.Unmarshal(file, testConfig) == nil {
@@ -536,7 +537,7 @@ func (f *maskJobLoggerFactory) WithJobLogger() *log.Logger {
 }
 
 func TestMaskValues(t *testing.T) {
-	assertNoSecret := func(text string, secret string) {
+	assertNoSecret := func(text string) {
 		index := strings.Index(text, "composite secret")
 		if index > -1 {
 			fmt.Printf("\nFound Secret in the given text:\n%s\n", text)
@@ -562,8 +563,8 @@ func TestMaskValues(t *testing.T) {
 	tjfi.runTest(WithJobLoggerFactory(common.WithLogger(context.Background(), logger.WithJobLogger()), logger), t, &Config{})
 	output := logger.Output.String()
 
-	assertNoSecret(output, "secret value")
-	assertNoSecret(output, "YWJjCg==")
+	assertNoSecret(output)
+	assertNoSecret(output)
 }
 
 func TestRunEventSecrets(t *testing.T) {

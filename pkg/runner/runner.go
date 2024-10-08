@@ -209,7 +209,7 @@ func (runner *runnerImpl) NewPlanExecutor(plan *model.Plan) common.Executor {
 }
 
 func handleFailure(plan *model.Plan) common.Executor {
-	return func(ctx context.Context) error {
+	return func(_ context.Context) error {
 		for _, stage := range plan.Stages {
 			for _, run := range stage.Runs {
 				if run.Job().Result == "failure" {

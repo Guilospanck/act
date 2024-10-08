@@ -75,6 +75,7 @@ type NewDockerPullExecutorInput struct {
 	Password  string
 }
 
+//revive:disable-next-line exported
 type ContainerHealth int
 
 const (

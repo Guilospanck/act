@@ -290,7 +290,7 @@ func (cr *containerReference) connect() common.Executor {
 }
 
 func (cr *containerReference) Close() common.Executor {
-	return func(ctx context.Context) error {
+	return func(_ context.Context) error {
 		if cr.cli != nil {
 			err := cr.cli.Close()
 			cr.cli = nil

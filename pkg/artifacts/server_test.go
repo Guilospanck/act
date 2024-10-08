@@ -336,7 +336,7 @@ func TestMkdirFsImplSafeResolve(t *testing.T) {
 	}
 
 	for name, tc := range tests {
-		t.Run(name, func(t *testing.T) {
+		t.Run(name, func(_ *testing.T) {
 			assert.Equal(tc.want, safeResolve(baseDir, tc.input))
 		})
 	}

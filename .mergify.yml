@@ -85,11 +85,11 @@ pull_request_rules:
       - check-success=snapshot
     actions:
       queue:
-        method: squash
+        merge_method: squash
         name: default
 queue_rules:
   - name: default
-    conditions:
+    merge_conditions:
       - check-success=lint
       - check-success=test-linux
       - check-success=codecov/patch

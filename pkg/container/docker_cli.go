@@ -571,6 +571,11 @@ func parse(flags *pflag.FlagSet, copts *containerOptions, serverOS string) (*con
 		}
 	}
 
+	// There's a possible overflow when converting from int to uint
+	if copts.ioMaxBandwidth < 0 {
+		return nil, fmt.Errorf("ioMaxBandwidth cannot be negative")
+	}
+
 	resources := container.Resources{
 		CgroupParent:         copts.cgroupParent,
 		Memory:               copts.memory.Value(),
@@ -597,7 +602,7 @@ func parse(flags *pflag.FlagSet, copts *containerOptions, serverOS string) (*con
 		BlkioDeviceReadIOps:  copts.deviceReadIOps.GetList(),
 		BlkioDeviceWriteIOps: copts.deviceWriteIOps.GetList(),
 		IOMaximumIOps:        copts.ioMaxIOps,
-		IOMaximumBandwidth:   uint64(copts.ioMaxBandwidth),
+		IOMaximumBandwidth:   uint64(copts.ioMaxBandwidth), // #nosec G115
 		Ulimits:              copts.ulimits.GetList(),
 		DeviceCgroupRules:    copts.deviceCgroupRules.GetAll(),
 		Devices:              deviceMappings,
